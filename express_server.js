@@ -13,15 +13,17 @@ app.get("/", (req, res) => {
   res.send("Hello!");
 });
 
-app.get("/urls.json", (req, res) => {
+/* app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
-});
+}); */
 
+// Add a route for /urls
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
 
+// creat hello_world.ejs template in views for /hello
 app.get("/hello", (req, res) => {
   const templateVars = { greeting: 'Hello World!' };
   res.render("hello_world", templateVars);
