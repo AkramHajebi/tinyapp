@@ -34,6 +34,11 @@ app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
+//Add a GET Route to Show the Form
+app.get("/urls/new", (req, res) => {
+  res.render("urls_new");
+});
+
 //Render information about a single URL
 app.get("/urls/:shortURL", (req, res) => {
   const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase.b2xVn2/* What goes here? */ };
