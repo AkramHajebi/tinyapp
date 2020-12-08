@@ -1,5 +1,8 @@
 const express = require("express");
+const bodyParser = require("body-parser");
 const app = express();
+
+app.use(bodyParser.urlencoded({extended: true}));
 const PORT = 8080; // default port 8080
 
 app.set("view engine", "ejs");
@@ -22,6 +25,13 @@ app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
+
+//Add a POST Route to Receive the Form Submission
+app.post("/urls", (req, res) => {
+  console.log(req.body);  // Log the POST request body to the console
+  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+});
+
 
 // creat hello_world.ejs template in views for /hello
 app.get("/hello", (req, res) => {
