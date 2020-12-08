@@ -69,9 +69,22 @@ app.get("/urls/new", (req, res) => {
 
 //Render information about a single URL
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]/* What goes here? */ };
+  const shortURL = req.params.shortURL;
+  const longURL = urlDatabase[shortURL];
+  const templateVars = { shortURL, longURL };
+
   res.render("urls_show", templateVars);
+  //res.redirect()
 });
+
+//Render information about a single URL
+app.get("/u/:shortURL", (req, res) => {
+  const shortURL = req.params.shortURL;
+  const longURL = urlDatabase[shortURL];
+  
+  res.redirect(longURL);
+});
+
 
 
 
