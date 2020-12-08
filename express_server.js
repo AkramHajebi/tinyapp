@@ -11,11 +11,6 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-//Generate a Random ShortURL
-function generateRandomString() {
-  let shortURL = Math.random().toString(36).substring(6);
-  return shortURL;
-}
 
 
 
@@ -33,9 +28,28 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+
+//Generate a Random ShortURL
+function generateRandomString() {
+  let forShorURL = Math.random().toString(36).substring(6);
+  //console.log(forShorURL);
+  return forShorURL;
+}
+
+
+// function to add new URL to urlDatabase
+function addKeyValuePair(stURL, lURL) {
+  //console.log(stURL);
+  urlDatabase[stURL] = lURL; 
+  //console.log(urlDatabase); 
+}
+
 //Add a POST Route to Receive the Form Submission
 app.post("/urls", (req, res) => {
-  console.log(req.body);  // Log the POST request body to the console
+  let shortURL = generateRandomString();
+  //console.log(shortURL);
+  let longURL = req.body.longURL;  // Log the POST request body to the console
+  addKeyValuePair(shortURL, longURL);
   res.send("Ok");         // Respond with 'Ok' (we will replace this)
 });
 
