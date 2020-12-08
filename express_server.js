@@ -47,10 +47,9 @@ function addKeyValuePair(stURL, lURL) {
 //Add a POST Route to Receive the Form Submission
 app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
-  //console.log(shortURL);
-  let longURL = req.body.longURL;  // Log the POST request body to the console
+   let longURL = req.body.longURL;  // Log the POST request body to the console
   addKeyValuePair(shortURL, longURL);
-  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+  res.redirect('/urls');         // redirect to /urls
 });
 
 
