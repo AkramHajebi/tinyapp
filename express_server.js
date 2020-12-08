@@ -4,13 +4,20 @@ const app = express();
 
 app.use(bodyParser.urlencoded({extended: true}));
 const PORT = 8080; // default port 8080
-
 app.set("view engine", "ejs");
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
+
+//Generate a Random ShortURL
+function generateRandomString() {
+  let shortURL = Math.random().toString(36).substring(6);
+  return shortURL;
+}
+
+
 
 app.get("/", (req, res) => {
   res.send("Hello!");
