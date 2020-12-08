@@ -13,9 +13,9 @@ app.get("/", (req, res) => {
   res.send("Hello!");
 });
 
-/* app.get("/urls.json", (req, res) => {
+app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
-}); */
+});
 
 // Add a route for /urls
 app.get("/urls", (req, res) => {
@@ -29,9 +29,18 @@ app.get("/hello", (req, res) => {
   res.render("hello_world", templateVars);
 });
 
+
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
+
+//Render information about a single URL
+app.get("/urls/:shortURL", (req, res) => {
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase.b2xVn2/* What goes here? */ };
+  res.render("urls_show", templateVars);
+});
+
+
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
