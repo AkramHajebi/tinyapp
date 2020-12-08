@@ -39,9 +39,7 @@ function generateRandomString() {
 
 // function to add new URL to urlDatabase
 function addKeyValuePair(stURL, lURL) {
-  //console.log(stURL);
-  urlDatabase[stURL] = lURL; 
-  //console.log(urlDatabase); 
+    urlDatabase[stURL] = lURL; 
 }
 
 //Add a POST Route to Receive the Form Submission
@@ -49,7 +47,7 @@ app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
    let longURL = req.body.longURL;  // Log the POST request body to the console
   addKeyValuePair(shortURL, longURL);
-  res.redirect('/urls');         // redirect to /urls
+  res.redirect(`/urls/${shortURL}`);         // redirect to /urls
 });
 
 
@@ -71,7 +69,7 @@ app.get("/urls/new", (req, res) => {
 
 //Render information about a single URL
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase.b2xVn2/* What goes here? */ };
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]/* What goes here? */ };
   res.render("urls_show", templateVars);
 });
 
