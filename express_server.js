@@ -11,7 +11,6 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-
 //Generate a Random ShortURL
 function generateRandomString() {
   let forShorURL = Math.random().toString(36).substring(6);
@@ -23,11 +22,6 @@ function generateRandomString() {
 function addKeyValuePair(stURL, lURL) {
     urlDatabase[stURL] = lURL; 
 }
-
-
-
-
-
 
 // Add a route for /urls
 app.get("/urls", (req, res) => {
@@ -44,7 +38,7 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls`);         // redirect to /urls
 });
 
-
+//Add a POST Route to delet a URL from the list of URLs
 app.post("/urls/:shortURL/delete", (req, res) => {
 
   console.log(req.params.shortURL);
@@ -53,13 +47,13 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   
 });
 
-
+//Add a POST Route to edit a longURL in the list of URLs
 app.post("/urls/:shortURL/Edit", (req, res) => {
 
   let shortURL = req.params.shortURL;
   console.log(shortURL);
   //urlDatabase[req.params.shortURL];
-  res.redirect(`/urls/:shortURL`);         // redirect to /urls
+  res.redirect(`/urls/:shortURL`);         // redirect to /urls/shortURL
   
 });
 
