@@ -51,6 +51,17 @@ app.post("/urls", (req, res) => {
 });
 
 
+app.post("/urls/:shortURL/delete", (req, res) => {
+
+  console.log(req.params.shortURL);
+  delete urlDatabase[req.params.shortURL];
+  res.redirect('/urls');         // redirect to /urls
+  
+});
+
+
+
+
 // creat hello_world.ejs template in views for /hello
 app.get("/hello", (req, res) => {
   const templateVars = { greeting: 'Hello World!' };
@@ -84,8 +95,6 @@ app.get("/u/:shortURL", (req, res) => {
   
   res.redirect(longURL);
 });
-
-
 
 
 app.listen(PORT, () => {
