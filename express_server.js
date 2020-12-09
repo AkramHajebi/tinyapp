@@ -12,15 +12,22 @@ const urlDatabase = {
 };
 
 
+//Generate a Random ShortURL
+function generateRandomString() {
+  let forShorURL = Math.random().toString(36).substring(6);
+  //console.log(forShorURL);
+  return forShorURL;
+}
+
+// function to add new URL to urlDatabase
+function addKeyValuePair(stURL, lURL) {
+    urlDatabase[stURL] = lURL; 
+}
 
 
-app.get("/", (req, res) => {
-  res.send("Hello!");
-});
 
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
+
+
 
 // Add a route for /urls
 app.get("/urls", (req, res) => {
@@ -29,25 +36,12 @@ app.get("/urls", (req, res) => {
 });
 
 
-//Generate a Random ShortURL
-function generateRandomString() {
-  let forShorURL = Math.random().toString(36).substring(6);
-  //console.log(forShorURL);
-  return forShorURL;
-}
-
-
-// function to add new URL to urlDatabase
-function addKeyValuePair(stURL, lURL) {
-    urlDatabase[stURL] = lURL; 
-}
-
 //Add a POST Route to Receive the Form Submission
 app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
    let longURL = req.body.longURL;  // Log the POST request body to the console
   addKeyValuePair(shortURL, longURL);
-  res.redirect(`/urls/${shortURL}`);         // redirect to /urls
+  res.redirect(`/urls`);         // redirect to /urls
 });
 
 
@@ -60,20 +54,17 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 });
 
 
+app.post("/urls/:shortURL/Edit", (req, res) => {
 
-
-// creat hello_world.ejs template in views for /hello
-app.get("/hello", (req, res) => {
-  const templateVars = { greeting: 'Hello World!' };
-  res.render("hello_world", templateVars);
+  let shortURL = req.params.shortURL;
+  console.log(shortURL);
+  //urlDatabase[req.params.shortURL];
+  res.redirect(`/urls/:shortURL`);         // redirect to /urls
+  
 });
 
 
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
-});
-
-//Add a GET Route to Show the Form
+//Add a GET Route to creat a new URL
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
@@ -83,19 +74,33 @@ app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const longURL = urlDatabase[shortURL];
   const templateVars = { shortURL, longURL };
-
   res.render("urls_show", templateVars);
-  //res.redirect()
-});
+  });
 
 //Render information about a single URL
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const longURL = urlDatabase[shortURL];
-  
-  res.redirect(longURL);
+    res.redirect(longURL);
 });
 
+app.get("/", (req, res) => {
+  res.send("Hello!");
+});
+
+app.get("/urls.json", (req, res) => {
+  res.json(urlDatabase);
+});
+
+// creat hello_world.ejs template in views for /hello
+app.get("/hello", (req, res) => {
+  const templateVars = { greeting: 'Hello World!' };
+  res.render("hello_world", templateVars);
+});
+
+app.get("/hello", (req, res) => {
+  res.send("<html><body>Hello <b>World</b></body></html>\n");
+});
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
