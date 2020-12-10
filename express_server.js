@@ -79,6 +79,16 @@ app.post("/logout", (req, res) => {
 });
 
 
+// GETs
+//Render information about a single URL
+app.get("/register", (req, res) => {
+  /* const shortURL = req.params.shortURL;
+  const longURL = urlDatabase[shortURL];
+  const templateVars = { shortURL, longURL, username: req.cookies["username"]};
+  */ 
+  res.render("users_new");
+  });
+
 //Add a GET Route to creat a new URL
 app.get("/urls/new", (req, res) => {
   let templateVars = {
