@@ -27,7 +27,12 @@ function addKeyValuePair(stURL, lURL) {
 
 // Add a route for /urls
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase };
+
+  let templateVars = {
+        username: req.cookies["username"],
+        urls: urlDatabase };
+    
+ 
   res.render("urls_index", templateVars);
 });
 
@@ -63,7 +68,7 @@ app.post("/urls/:shortURL/Edit", (req, res) => {
 app.post("/login", (req, res) => {
 
   // let shortURL = req.params.shortURL;
-  console.log(req.body.username);
+  //console.log(req.body.username);
   res.cookie('username', req.body.username);
   //urlDatabase[req.params.shortURL];
   res.redirect('/urls');         // redirect to /urls/shortURL
@@ -73,14 +78,16 @@ app.post("/login", (req, res) => {
 
 //Add a GET Route to creat a new URL
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  let templateVars = {
+    username: req.cookies["username"]};
+  res.render("urls_new",templateVars);
 });
 
 //Render information about a single URL
 app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const longURL = urlDatabase[shortURL];
-  const templateVars = { shortURL, longURL };
+  const templateVars = { shortURL, longURL, username: req.cookies["username"]};
   res.render("urls_show", templateVars);
   });
 
@@ -113,3 +120,22 @@ app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
+
+
+/* <% if (username === undefined || username === null) { %>
+  <form action="/login" method="POST">
+    <input type="text" name="username">
+    <button>Login</button>
+  </form>
+  
+<%  }else { %>
+  <%= username %>
+  <form action="/logout" method="POST">
+  <button>Logout</button>
+  </form>
+  
+
+<% }%>
+
+
+ */
