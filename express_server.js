@@ -13,6 +13,21 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+//users database
+const users = { 
+  "userRandomID": {
+    id: "userRandomID", 
+    email: "user@example.com", 
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID", 
+    email: "user2@example.com", 
+    password: "dishwasher-funk"
+  }
+}
+
+
 //Generate a Random ShortURL
 function generateRandomString() {
   let forShorURL = Math.random().toString(36).substring(6);
@@ -79,8 +94,8 @@ app.post("/logout", (req, res) => {
 });
 
 
-// GETs
-//Render information about a single URL
+
+//
 app.get("/register", (req, res) => {
   /* const shortURL = req.params.shortURL;
   const longURL = urlDatabase[shortURL];
@@ -88,6 +103,22 @@ app.get("/register", (req, res) => {
   */ 
   res.render("users_new");
   });
+
+// Create a Registration post
+  app.post("/register", (req, res) => {
+    let ID_new = {};
+    let randomID = `user${Math.random().toString(36).substring(6)}`;
+    //    console.log(req.body);
+    ID_new['id'] = randomID;
+    ID_new['email'] = req.body.email;
+    ID_new['password'] = req.body.password;
+    users[randomID] = ID_new;
+    //set a user_id cookie containing the user's newly generated ID
+    res.cookie('user_id', ID_new['id']);
+    //res.send("ok");
+    res.redirect('/urls');         // redirect to /urls
+  });
+
 
 //Add a GET Route to creat a new URL
 app.get("/urls/new", (req, res) => {
