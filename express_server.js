@@ -64,15 +64,18 @@ app.post("/urls/:shortURL/Edit", (req, res) => {
   
 });
 
-//Add a POST Route to edit a longURL in the list of URLs
+//Add a POST Route to login
 app.post("/login", (req, res) => {
-
-  // let shortURL = req.params.shortURL;
   //console.log(req.body.username);
   res.cookie('username', req.body.username);
-  //urlDatabase[req.params.shortURL];
-  res.redirect('/urls');         // redirect to /urls/shortURL
-  
+  res.redirect('/urls');         // redirect to /urls
+});
+
+
+//Add a POST Route to logout
+app.post("/logout", (req, res) => {
+  res.clearCookie('username');
+  res.redirect('/urls');         // redirect to /urls
 });
 
 
@@ -122,20 +125,3 @@ app.listen(PORT, () => {
 
 
 
-/* <% if (username === undefined || username === null) { %>
-  <form action="/login" method="POST">
-    <input type="text" name="username">
-    <button>Login</button>
-  </form>
-  
-<%  }else { %>
-  <%= username %>
-  <form action="/logout" method="POST">
-  <button>Logout</button>
-  </form>
-  
-
-<% }%>
-
-
- */
