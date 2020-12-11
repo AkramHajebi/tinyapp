@@ -95,19 +95,45 @@ app.get("/register", (req, res) => {
   res.render("users_new",templateVars);
   });
 
+const generateRandomID = function() {
+  let randID = `user${Math.random().toString(36).substring(6)}`;
+  return randID
+}
+
+const findEmail = function(id, email, password) {
+  if (email && password) {    
+    
+    let a = 'true'; // for checking if provided email is new
+    for (const user in users) {      
+      if (email === users[user].email) {
+        a = 'false';             
+      }
+    }    
+    return a;
+  } else {
+    return 'false'
+  }
+}
+
+
 // Create a Registration post
 app.post("/register", (req, res) => {
-  // generating random user id
-  let randomID = `user${Math.random().toString(36).substring(6)}`;
-  let ID_new =
-  {
-    'id': randomID,
-    'email': req.body.email,
-    'password': req.body.password
-  };
-  users[randomID] = ID_new; // add new ID to existing user
-  res.cookie('user_id', ID_new['id']);
-  res.redirect('/urls');         // redirect to /urls
+  const id = generateRandomID();
+  const email = req.body.email;
+  const password = req.body.password;
+  
+  if (findEmail(id, email, password) === 'false') {
+    res.status(404).send('email already exist or you forgot to enter password or email ')
+  } else { 
+    ID_new ={
+      'id': id,
+      'email': email,
+      'password': password
+    }
+    users[id] = ID_new; // add new ID to existing user
+    res.cookie('user_id', ID_new['id']);
+    res.redirect('/urls');         // redirect to /urls
+  }
 });
 
 
