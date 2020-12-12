@@ -104,15 +104,15 @@ const generateRandomID = function() {
 const findEmail = function(id, email, password) {
   if (email && password) {    
     
-    let a = 'true'; // for checking if provided email is new
+    let a = 'false'; // for checking if provided email is new
     for (const user in users) {      
       if (email === users[user].email) {
-        a = 'false';             
+        a = 'true';             
       }
     }    
     return a;
   } else {
-    return 'false'
+    return 'true'
   }
 }
 
@@ -122,7 +122,7 @@ app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   
-  if (findEmail(id, email, password) === 'false') {
+  if (findEmail(id, email, password) === 'true') {
     res.status(404).send('email already exist or you forgot to enter password or email ')
   } else { 
     ID_new ={
@@ -136,32 +136,19 @@ app.post("/register", (req, res) => {
   }
 });
 
-//Add a POST Route to login with email and pass
-app.post("/login", (req, res) => {
-
-  const email = req.body.email;
-  const password = req.body.password;
-  let ID;
-  //findig user id from  the provided email
+// FUNCTION TO CHECK IF email and paasword are match 
+const checkEmailPass = function(email, password) {
+  let ID ='';
   for (const user in users) {
-    if (email === users[user].email) {
+    //console.log(users[user].email);
+    if (users[user].email === email && users[user].password === password) {
       ID = users[user].id;
-      //console.log(ID);  //            
     }
   }
-  res.cookie('user_id', ID);      //set cookie for this loged in ID
-  res.redirect('/urls');         // redirect to /urls
-});
+  console.log(ID);
+  return ID;
+};
 
-
-app.get("/login", (req, res) => {
-  let templateVars =
-  {
-    user: users[req.cookies["user_id"]]
-  };
-  
-  res.render("users_login",templateVars);
-  });
 
 
 
@@ -171,28 +158,27 @@ app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   let ID;
-  //findig user id from  the provided email
-  for (const user in users) {
-    if (email === users[user].email) {
-      ID = users[user].id;
-      //console.log(ID);  //            
-    }
+
+  let idUser = checkEmailPass(email, password);
+  if (idUser) { 
+
+    res.cookie('user_id', idUser);
+    //res.send('ok')
+    res.redirect('/urls'); 
+
+  } else {
+    res.status(404).send('email or password not match')
   }
-  res.cookie('user_id', ID);      //set cookie for this loged in ID
-  res.redirect('/urls');         // redirect to /urls
 });
 
 
 app.get("/login", (req, res) => {
-  let templateVars =
-  {
+  let templateVars ={
     user: users[req.cookies["user_id"]]
   };
   
   res.render("users_login",templateVars);
-  });
-
-
+});
 
 
 //Add a GET Route to creat a new URL
@@ -242,6 +228,3 @@ app.get("/hello", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
-
-
-
