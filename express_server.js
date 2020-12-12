@@ -73,11 +73,6 @@ app.post("/urls/:shortURL/Edit", (req, res) => {
   res.redirect(`/urls/:shortURL`);         // redirect to /urls/shortURL
 });
 
-/* //Add a POST Route to login
-app.post("/login", (req, res) => {
-  res.cookie('username', req.body.username);
-  res.redirect('/urls');         // redirect to /urls
-}); */
 
 //Add a POST Route to logout
 app.post("/logout", (req, res) => {
