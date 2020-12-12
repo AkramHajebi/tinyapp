@@ -176,6 +176,37 @@ app.get("/login", (req, res) => {
 });
 
 
+
+//Add a POST Route to login with email and pass
+app.post("/login", (req, res) => {
+
+  const email = req.body.email;
+  const password = req.body.password;
+  let ID;
+  //findig user id from  the provided email
+  for (const user in users) {
+    if (email === users[user].email) {
+      ID = users[user].id;
+      //console.log(ID);  //            
+    }
+  }
+  res.cookie('user_id', ID);      //set cookie for this loged in ID
+  res.redirect('/urls');         // redirect to /urls
+});
+
+
+app.get("/login", (req, res) => {
+  let templateVars =
+  {
+    user: users[req.cookies["user_id"]]
+  };
+  
+  res.render("users_login",templateVars);
+  });
+
+
+
+
 //Add a GET Route to creat a new URL
 app.get("/urls/new", (req, res) => {
   let templateVars =
