@@ -103,6 +103,23 @@ app.post("/urls/:shortURL/Edit", (req, res) => {
   res.redirect('/urls');
 });
 
+
+//Add a GET Route to creat a new URL
+app.get("/urls/new", (req, res) => {
+  let templateVars =
+  {
+    user: users[req.session["user_id"]],
+  };  
+
+  //only registered and logged in users access to urls/new
+   if (templateVars.user) {
+    res.render("urls_new",templateVars);
+  } else {
+    res.redirect('/urls'); 
+  }
+  
+});
+
 //Render information about a single URL
 app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
@@ -157,6 +174,19 @@ const findEmail = function(id, email, password) {
   }
 }
 
+// FUNCTION TO CHECK IF email exist
+const getUserByEmail = function(email, users) {
+  //let ID ='';
+  for (const user in users) {
+    
+    if (users[user].email === email) {
+      return user;
+    }
+  }  
+  return null;
+};
+
+
 // Create a Registration post
 app.post("/register", (req, res) => {
   const id = generateRandomID();
@@ -164,8 +194,11 @@ app.post("/register", (req, res) => {
   const password = req.body.password;
   const hashedPassword = bcrypt.hashSync(password, 10);
   
-  if (findEmail(id, email,  hashedPassword) === 'true') {
-    res.status(404).send('email already exist or you forgot to enter password or email ')
+  let user = getUserByEmail(email, users);
+
+  if (user) {
+    res.status(404).send('email already exist');
+    //res.redirect('/urls');
   } else { 
     ID_new ={
       'id': id,
@@ -178,28 +211,28 @@ app.post("/register", (req, res) => {
   }
 });
 
-// FUNCTION TO CHECK IF email and paasword are match 
-const checkEmailPass = function(email, password) {
-  let ID ='';
-  for (const user in users) {
-    //console.log(users[user].email);
-    if (users[user].email === email && bcrypt.compareSync(password,users[user].password)) {
-      ID = users[user].id;
-    }
-  }
-  console.log(ID);
-  return ID;
-};
-
-
 //Add a POST Route to login with email and pass
 app.post("/login", (req, res) => {
 
   const email = req.body.email;
   const password = req.body.password;
   let ID;
+  let user = getUserByEmail(email, users);
+  
+  //console.log (user);
+   if (user && bcrypt.compareSync(password,users[user].password)) {
+    //console.log(user);
 
-  let idUser = checkEmailPass(email, password);
+    let idUser = users[user].userID;
+    //console.log(users[user].id);
+
+    req.session['user_id'] = users[user].id; 
+    res.redirect('/urls'); 
+  } else {
+   res.status(404).send('email doest exist or email-password do not match')
+  }
+
+  /* let idUser = checkEmailPass(email, password);
   if (idUser) { 
 
     req.session['user_id'] = idUser;
@@ -208,7 +241,7 @@ app.post("/login", (req, res) => {
 
   } else {
     res.status(404).send('email or password not match')
-  }
+  } */
 });
 
 
@@ -221,21 +254,6 @@ app.get("/login", (req, res) => {
 });
 
 
-//Add a GET Route to creat a new URL
-app.get("/urls/new", (req, res) => {
-  let templateVars =
-  {
-    user: users[req.session["user_id"]],
-  };  
-
-  //only registered and logged in users access to urls/new
-   if (templateVars.user) {
-    res.render("urls_new",templateVars);
-  } else {
-    res.redirect('/urls'); 
-  }
-  
-});
 
 
 
