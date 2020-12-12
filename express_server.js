@@ -180,7 +180,7 @@ const checkEmailPass = function(email, password) {
   let ID ='';
   for (const user in users) {
     //console.log(users[user].email);
-    if (users[user].email === email && users[user].password === password) {
+    if (users[user].email === email && bcrypt.compareSync(password,users[user].password)) {
       ID = users[user].id;
     }
   }
