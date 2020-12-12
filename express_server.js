@@ -73,11 +73,6 @@ app.post("/urls/:shortURL/Edit", (req, res) => {
   res.redirect(`/urls/:shortURL`);         // redirect to /urls/shortURL
 });
 
-/* //Add a POST Route to login
-app.post("/login", (req, res) => {
-  res.cookie('username', req.body.username);
-  res.redirect('/urls');         // redirect to /urls
-}); */
 
 //Add a POST Route to logout
 app.post("/logout", (req, res) => {
@@ -104,15 +99,15 @@ const generateRandomID = function() {
 const findEmail = function(id, email, password) {
   if (email && password) {    
     
-    let a = 'true'; // for checking if provided email is new
+    let a = 'false'; // for checking if provided email is new
     for (const user in users) {      
       if (email === users[user].email) {
-        a = 'false';             
+        a = 'true';             
       }
     }    
     return a;
   } else {
-    return 'false'
+    return 'true'
   }
 }
 
@@ -122,7 +117,7 @@ app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   
-  if (findEmail(id, email, password) === 'false') {
+  if (findEmail(id, email, password) === 'true') {
     res.status(404).send('email already exist or you forgot to enter password or email ')
   } else { 
     ID_new ={
@@ -134,6 +129,50 @@ app.post("/register", (req, res) => {
     res.cookie('user_id', ID_new['id']);
     res.redirect('/urls');         // redirect to /urls
   }
+});
+
+// FUNCTION TO CHECK IF email and paasword are match 
+const checkEmailPass = function(email, password) {
+  let ID ='';
+  for (const user in users) {
+    //console.log(users[user].email);
+    if (users[user].email === email && users[user].password === password) {
+      ID = users[user].id;
+    }
+  }
+  console.log(ID);
+  return ID;
+};
+
+
+
+
+//Add a POST Route to login with email and pass
+app.post("/login", (req, res) => {
+
+  const email = req.body.email;
+  const password = req.body.password;
+  let ID;
+
+  let idUser = checkEmailPass(email, password);
+  if (idUser) { 
+
+    res.cookie('user_id', idUser);
+    //res.send('ok')
+    res.redirect('/urls'); 
+
+  } else {
+    res.status(404).send('email or password not match')
+  }
+});
+
+
+app.get("/login", (req, res) => {
+  let templateVars ={
+    user: users[req.cookies["user_id"]]
+  };
+  
+  res.render("users_login",templateVars);
 });
 
 
@@ -215,6 +254,3 @@ app.get("/hello", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
-
-
-
