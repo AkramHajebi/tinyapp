@@ -1,13 +1,16 @@
 const PORT = 8080; // default port 8080
 const express = require("express");
 const bodyParser = require("body-parser");
-const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
 const app = express();
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
-app.use(cookieParser());
+app.use(cookieSession({
+  name: 'session',
+  keys: ['key1', 'key2']
+}));
 
 const urlDatabase = {
   b6UTxQ: { longURL: "https://www.tsn.ca", userID: "userRandomID" },
@@ -58,11 +61,11 @@ const urlsForUser = function(id) {
 // Add a route for /urls
 app.get("/urls", (req, res) => {
 
- urls = urlsForUser(req.cookies["user_id"]);
+ urls = urlsForUser(req.session["user_id"]);
 
   let templateVars =
   {
-    user: users[req.cookies["user_id"]],
+    user: users[req.session["user_id"]],
     urls: urls
   };
   //console.log(templateVars);
@@ -74,7 +77,7 @@ app.get("/urls", (req, res) => {
 app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
   let longURL = req.body.longURL;  // Log the POST request body to the console
-  let userID = req.cookies["user_id"];
+  let userID =  req.session["user_id"];
 
   addKeyValuePair(shortURL, longURL, userID);
   //console.log(urlDatabase);
@@ -85,7 +88,7 @@ app.post("/urls", (req, res) => {
 app.post("/urls/:shortURL/delete", (req, res) => {
   
   let shortURL = req.params.shortURL;
-  if ( urlDatabase[shortURL].userID === req.cookies["user_id"]) {
+  if ( urlDatabase[shortURL].userID === req.session["user_id"]) {
    //delete urlDatabase[shortURL];
   } 
   res.redirect('/urls');
@@ -94,7 +97,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 //Add a POST Route to edit a longURL in the list of URLs
 app.post("/urls/:shortURL/Edit", (req, res) => {
   let shortURL = req.params.shortURL;
-  if ( urlDatabase[shortURL].userID === req.cookies["user_id"]) {
+  if ( urlDatabase[shortURL].userID === req.session["user_id"]) {
     res.redirect(`/urls/${shortURL}`);  
   } 
   res.redirect('/urls');
@@ -110,7 +113,7 @@ app.get("/urls/:shortURL", (req, res) => {
   {
     shortURL,
     longURL,
-    user: users[req.cookies["user_id"]]
+    user: users[req.session["user_id"]]
   };
 
   res.render("urls_show", templateVars);
@@ -119,7 +122,7 @@ app.get("/urls/:shortURL", (req, res) => {
 
 //Add a POST Route to logout
 app.post("/logout", (req, res) => {
-  res.clearCookie('user_id');
+  req.session = null;
   //res.send('ok')
   res.redirect('/urls');
 });
@@ -128,7 +131,7 @@ app.post("/logout", (req, res) => {
 app.get("/register", (req, res) => {
   let templateVars =
   {
-    user: users[req.cookies["user_id"]]
+    user: users[req.session["user_id"]]
   };
   
   res.render("users_new",templateVars);
@@ -170,7 +173,7 @@ app.post("/register", (req, res) => {
       'password':  hashedPassword
     }
     users[id] = ID_new; // add new ID to existing user
-    res.cookie('user_id', ID_new['id']);
+    req.session['user_id'] = ID_new['id'];
     res.redirect('/urls');         // redirect to /urls
   }
 });
@@ -199,7 +202,7 @@ app.post("/login", (req, res) => {
   let idUser = checkEmailPass(email, password);
   if (idUser) { 
 
-    res.cookie('user_id', idUser);
+    req.session['user_id'] = idUser;
     //res.send('ok')
     res.redirect('/urls'); 
 
@@ -211,7 +214,7 @@ app.post("/login", (req, res) => {
 
 app.get("/login", (req, res) => {
   let templateVars ={
-    user: users[req.cookies["user_id"]]
+    user: users[req.session["user_id"]]
   };
   
   res.render("users_login",templateVars);
@@ -222,7 +225,7 @@ app.get("/login", (req, res) => {
 app.get("/urls/new", (req, res) => {
   let templateVars =
   {
-    user: users[req.cookies["user_id"]],
+    user: users[req.session["user_id"]],
   };  
 
   //only registered and logged in users access to urls/new
