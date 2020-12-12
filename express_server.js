@@ -2,6 +2,7 @@ const PORT = 8080; // default port 8080
 const express = require("express");
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
+const bcrypt = require('bcrypt');
 const app = express();
 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -19,12 +20,12 @@ const users = {
   "userRandomID": {
     id: "userRandomID", 
     email: "user@example.com", 
-    password: "purple-monkey-dinosaur"
+    password:  bcrypt.hashSync("purple-monkey-dinosaur", 10)
   },
  "user2RandomID": {
     id: "user2RandomID", 
     email: "user2@example.com", 
-    password: "dishwasher-funk"
+    password: bcrypt.hashSync("dishwasher-funk", 10)
   }
 };
 
@@ -158,14 +159,15 @@ app.post("/register", (req, res) => {
   const id = generateRandomID();
   const email = req.body.email;
   const password = req.body.password;
+  const hashedPassword = bcrypt.hashSync(password, 10);
   
-  if (findEmail(id, email, password) === 'true') {
+  if (findEmail(id, email,  hashedPassword) === 'true') {
     res.status(404).send('email already exist or you forgot to enter password or email ')
   } else { 
     ID_new ={
       'id': id,
       'email': email,
-      'password': password
+      'password':  hashedPassword
     }
     users[id] = ID_new; // add new ID to existing user
     res.cookie('user_id', ID_new['id']);
