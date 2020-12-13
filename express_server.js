@@ -20,11 +20,11 @@ const urlDatabase = {
 };
 
 //users database
-const users = { 
+const users = {
   "userRandomID": {
-    id: "userRandomID", 
-    email: "user@example.com", 
-    password:  bcrypt.hashSync("purple-monkey-dinosaur", 10)
+    id: "userRandomID",
+    email: "user@example.com",
+    password:  bcrypt.hashSync("12345", 10)
   },
  "user2RandomID": {
     id: "user2RandomID", 
@@ -32,7 +32,6 @@ const users = {
     password: bcrypt.hashSync("dishwasher-funk", 10)
   }
 };
-
 
 //Generate a Random ShortURL
 function generateRandomString() {
@@ -58,7 +57,21 @@ const urlsForUser = function(id) {
     }
   }
   return urls;
-}
+};
+
+app.get("/", (req, res) => {
+
+  let templateVars = {
+    user: users[req.session["user_id"]]
+  };
+  //only registered and logged in users access to urls/new
+  if (templateVars.user) {
+    res.redirect('/urls');
+  } else {
+    res.redirect('/login');
+  }
+}); 
+
 // Add a route for /urls
 app.get("/urls", (req, res) => {
 
@@ -73,7 +86,6 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-
 //Add a POST Route to Receive the Form Submission
 app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
@@ -81,29 +93,40 @@ app.post("/urls", (req, res) => {
   let userID =  req.session["user_id"];
 
   addKeyValuePair(shortURL, longURL, userID);
-  //console.log(urlDatabase);
-  res.redirect(`/urls`);         // redirect to /urls
-});
+  
+  let templateVars = {
+    user: users[req.session["user_id"]],
+  };  
+  
+  if (templateVars.user) {
+    res.redirect(`/urls/${shortURL}`);
+  } else {
+    res.send("You are not allowed to edit this short URL");
+  }
+
+  });
 
 //Add a POST Route to delet a URL from the list of URLs
 app.post("/urls/:shortURL/delete", (req, res) => {
   
   let shortURL = req.params.shortURL;
   if ( urlDatabase[shortURL].userID === req.session["user_id"]) {
-   //delete urlDatabase[shortURL];
+   delete urlDatabase[shortURL];
   } 
   res.redirect('/urls');
 });
 
 //Add a POST Route to edit a longURL in the list of URLs
-app.post("/urls/:shortURL/Edit", (req, res) => {
-  let shortURL = req.params.shortURL;
-  if ( urlDatabase[shortURL].userID === req.session["user_id"]) {
-    res.redirect(`/urls/${shortURL}`);  
-  } 
-  res.redirect('/urls');
-});
+app.post("/urls/:id", (req, res) => {
+  let shortURL = req.params.id;
 
+  if ( urlDatabase[shortURL].userID === req.session["user_id"]) {
+
+    urlDatabase[shortURL].longURL = req.body.newlongURL;
+    res.redirect('/urls');  
+  } 
+  res.status(401).send("You are not allowed to edit this short URL.");
+});
 
 //Add a GET Route to creat a new URL
 app.get("/urls/new", (req, res) => {
@@ -116,14 +139,14 @@ app.get("/urls/new", (req, res) => {
    if (templateVars.user) {
     res.render("urls_new",templateVars);
   } else {
-    res.redirect('/urls'); 
+    res.redirect('/login'); 
   }
   
 });
 
 //Render information about a single URL
-app.get("/urls/:shortURL", (req, res) => {
-  const shortURL = req.params.shortURL;
+app.get("/urls/:id", (req, res) => {
+  const shortURL = req.params.id;
   const longURL = urlDatabase[shortURL].longURL;
   //console.log(req.params);
  // console.log(urlDatabase);
@@ -136,7 +159,6 @@ app.get("/urls/:shortURL", (req, res) => {
 
   res.render("urls_show", templateVars);
 });
-
 
 //Add a POST Route to logout
 app.post("/logout", (req, res) => {
@@ -151,32 +173,17 @@ app.get("/register", (req, res) => {
   {
     user: users[req.session["user_id"]]
   };
-  
-  res.render("users_new",templateVars);
+  if (templateVars.user) {
+    res.redirect('/urls');
+  } else {
+    res.render("users_new",templateVars);
+  }
   });
 
 const generateRandomID = function() {
   let randID = `user${Math.random().toString(36).substring(6)}`;
   return randID
 }
-/* 
-const findEmail = function(id, email, password) {
-  if (email && password) {    
-    
-    let a = 'false'; // for checking if provided email is new
-    for (const user in users) {      
-      if (email === users[user].email) {
-        a = 'true';             
-      }
-    }    
-    return a;
-  } else {
-    return 'true'
-  }
-} */
-
-
-
 
 // Create a Registration post
 app.post("/register", (req, res) => {
@@ -225,27 +232,24 @@ app.post("/login", (req, res) => {
 
   /* let idUser = checkEmailPass(email, password);
   if (idUser) { 
-
     req.session['user_id'] = idUser;
     //res.send('ok')
     res.redirect('/urls'); 
-
   } else {
     res.status(404).send('email or password not match')
   } */
 });
 
-
 app.get("/login", (req, res) => {
   let templateVars ={
     user: users[req.session["user_id"]]
   };
-  
+  if (templateVars.user) {
+    res.redirect('/urls');
+  } else {    
   res.render("users_login",templateVars);
+  }
 });
-
-
-
 
 
 //Render information about a single URL
@@ -255,21 +259,6 @@ app.get("/u/:shortURL", (req, res) => {
   
   res.redirect(longURL);
 });
-
-/* app.get("/", (req, res) => {
-  res.send("Hello!");
-});
-
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
-
-// creat hello_world.ejs template in views for /hello
-app.get("/hello", (req, res) => {
-  const templateVars = { greeting: 'Hello World!' };
-  res.render("hello_world", templateVars);
-}); */
-
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
