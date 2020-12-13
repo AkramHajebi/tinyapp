@@ -3,6 +3,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
+let {getUserByEmail} = require('./helpers.js');
 const app = express();
 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -158,7 +159,7 @@ const generateRandomID = function() {
   let randID = `user${Math.random().toString(36).substring(6)}`;
   return randID
 }
-
+/* 
 const findEmail = function(id, email, password) {
   if (email && password) {    
     
@@ -172,19 +173,9 @@ const findEmail = function(id, email, password) {
   } else {
     return 'true'
   }
-}
+} */
 
-// FUNCTION TO CHECK IF email exist
-const getUserByEmail = function(email, users) {
-  //let ID ='';
-  for (const user in users) {
-    
-    if (users[user].email === email) {
-      return user;
-    }
-  }  
-  return null;
-};
+
 
 
 // Create a Registration post
