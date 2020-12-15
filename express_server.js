@@ -148,6 +148,7 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   const shortURL = req.params.id;
   const longURL = urlDatabase[shortURL].longURL;
+  const thisUserID = urlDatabase[shortURL].userID;
   //console.log(req.params);
   // console.log(urlDatabase);
   const templateVars =
@@ -157,7 +158,11 @@ app.get("/urls/:id", (req, res) => {
     user: users[req.session["user_id"]]
   };
 
-  res.render("urls_show", templateVars);
+  if (thisUserID === templateVars.user) {
+    res.render("urls_show", templateVars);
+  } else {
+    res.send("You are not authorized to access this url");
+  }    
 });
 
 //Add a POST Route to logout
@@ -257,7 +262,6 @@ app.get("/login", (req, res) => {
     res.render("users_login",templateVars);
   }
 });
-
 
 //Render information about a single URL
 app.get("/u/:shortURL", (req, res) => {
