@@ -75,7 +75,7 @@ app.get("/", (req, res) => {
 // Add a route for /urls
 app.get("/urls", (req, res) => {
 
- urls = urlsForUser(req.session["user_id"]);
+  let urls = urlsForUser(req.session["user_id"]);
 
   let templateVars =
   {
@@ -96,7 +96,7 @@ app.post("/urls", (req, res) => {
   
   let templateVars = {
     user: users[req.session["user_id"]],
-  };  
+  };
   
   if (templateVars.user) {
     res.redirect(`/urls/${shortURL}`);
@@ -104,15 +104,15 @@ app.post("/urls", (req, res) => {
     res.send("You are not allowed to edit this short URL");
   }
 
-  });
+});
 
 //Add a POST Route to delet a URL from the list of URLs
 app.post("/urls/:shortURL/delete", (req, res) => {
   
   let shortURL = req.params.shortURL;
-  if ( urlDatabase[shortURL].userID === req.session["user_id"]) {
-   delete urlDatabase[shortURL];
-  } 
+  if (urlDatabase[shortURL].userID === req.session["user_id"]) {
+    delete urlDatabase[shortURL];
+  }
   res.redirect('/urls');
 });
 
@@ -120,11 +120,11 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 app.post("/urls/:id", (req, res) => {
   let shortURL = req.params.id;
 
-  if ( urlDatabase[shortURL].userID === req.session["user_id"]) {
+  if (urlDatabase[shortURL].userID === req.session["user_id"]) {
 
     urlDatabase[shortURL].longURL = req.body.newlongURL;
-    res.redirect('/urls');  
-  } 
+    res.redirect('/urls');
+  }
   res.status(401).send("You are not allowed to edit this short URL.");
 });
 
@@ -133,13 +133,13 @@ app.get("/urls/new", (req, res) => {
   let templateVars =
   {
     user: users[req.session["user_id"]],
-  };  
-
+  };
+  
   //only registered and logged in users access to urls/new
-   if (templateVars.user) {
+  if (templateVars.user) {
     res.render("urls_new",templateVars);
   } else {
-    res.redirect('/login'); 
+    res.redirect('/login');
   }
   
 });
@@ -149,7 +149,7 @@ app.get("/urls/:id", (req, res) => {
   const shortURL = req.params.id;
   const longURL = urlDatabase[shortURL].longURL;
   //console.log(req.params);
- // console.log(urlDatabase);
+  // console.log(urlDatabase);
   const templateVars =
   {
     shortURL,
@@ -192,8 +192,9 @@ app.post("/register", (req, res) => {
   const password = req.body.password;
   const hashedPassword = bcrypt.hashSync(password, 10);
   
-  let user = getUserByEmail(email, users);
+ if (email && password) {
 
+  let user = getUserByEmail(email, users);
   if (user) {
     res.status(404).send('email already exist');
     //res.redirect('/urls');
@@ -207,6 +208,12 @@ app.post("/register", (req, res) => {
     req.session['user_id'] = ID_new['id'];
     res.redirect('/urls');         // redirect to /urls
   }
+} else {
+  res.status(404).send('Please enter both email & password for registeration');
+  
+ } 
+
+  
 });
 
 //Add a POST Route to login with email and pass
@@ -241,13 +248,13 @@ app.post("/login", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-  let templateVars ={
+  let templateVars = {
     user: users[req.session["user_id"]]
   };
   if (templateVars.user) {
     res.redirect('/urls');
-  } else {    
-  res.render("users_login",templateVars);
+  } else {
+    res.render("users_login",templateVars);
   }
 });
 
