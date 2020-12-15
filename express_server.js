@@ -13,15 +13,15 @@ app.use(cookieSession({
   keys: ['key1', 'key2']
 }));
 
-const urlDatabase = {cd 
-  /* b6UTxQ: { longURL: "https://www.tsn.ca", userID: "userRandomID" },
+const urlDatabase = {
+   /* b6UTxQ: { longURL: "https://www.tsn.ca", userID: "userRandomID" },
   c6UTxQ: { longURL: "https://www.kala.ca", userID: "user2RandomID" },
   i3BoGr: { longURL: "https://www.google.ca", userID: "user2RandomID" } */
 };
 
 //users database
 const users = {
-  /* "userRandomID": {
+  /*  "userRandomID": {
     id: "userRandomID",
     email: "user@example.com",
     password:  bcrypt.hashSync("12345", 10)
@@ -30,7 +30,7 @@ const users = {
     id: "user2RandomID", 
     email: "user2@example.com", 
     password: bcrypt.hashSync("dishwasher-funk", 10)
-  } */
+  }  */
 };
 
 //Generate a Random ShortURL
@@ -78,7 +78,6 @@ app.get("/urls", (req, res) => {
     user: users[req.session["user_id"]],
     urls: urls
   };
-  //console.log(templateVars);
   res.render("urls_index", templateVars);
 });
 //Add a POST Route to Receive the Form Submission
@@ -92,7 +91,7 @@ app.post("/urls", (req, res) => {
   let templateVars = {
     user: users[req.session["user_id"]],
   };
-  
+
   if (templateVars.user) {
     res.redirect(`/urls/${shortURL}`);
   } else {
@@ -127,8 +126,7 @@ app.get("/urls/new", (req, res) => {
   let templateVars =
   {
     user: users[req.session["user_id"]],
-  };
-  
+  };  
   //only registered and logged in users access to urls/new
   if (templateVars.user) {
     res.render("urls_new",templateVars);
@@ -143,16 +141,14 @@ app.get("/urls/:id", (req, res) => {
   const shortURL = req.params.id;
   const longURL = urlDatabase[shortURL].longURL;
   const thisUserID = urlDatabase[shortURL].userID;
-  //console.log(req.params);
-  // console.log(urlDatabase);
   const templateVars =
   {
     shortURL,
     longURL,
     user: users[req.session["user_id"]]
   };
-
-  if (thisUserID === templateVars.user) {
+  
+  if (thisUserID === templateVars.user.id) {
     res.render("urls_show", templateVars);
   } else {
     res.send("You are not authorized to access this url");
@@ -162,7 +158,6 @@ app.get("/urls/:id", (req, res) => {
 //Add a POST Route to logout
 app.post("/logout", (req, res) => {
   req.session = null;
-  //res.send('ok')
   res.redirect('/urls');
 });
 
@@ -195,8 +190,7 @@ app.post("/register", (req, res) => {
 
   let user = getUserByEmail(email, users);
   if (user) {
-    res.status(404).send('email already exist');
-    //res.redirect('/urls');
+    res.status(404).send('email already exist');    
   } else { 
     ID_new ={
       'id': id,
@@ -222,17 +216,13 @@ app.post("/login", (req, res) => {
   let ID;
   let user = getUserByEmail(email, users);
   
-  //console.log (user);
    if (user && bcrypt.compareSync(password,users[user].password)) {
-    //console.log(user);
     let idUser = users[user].userID;
-    //console.log(users[user].id);
     req.session['user_id'] = users[user].id; 
     res.redirect('/urls'); 
   } else {
-   res.status(404).send('email doest exist or email-password do not match')
+   res.status(404).send('email doest exist or email-password do not match');
   }
-
 });
 
 app.get("/login", (req, res) => {
@@ -250,7 +240,7 @@ app.get("/login", (req, res) => {
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const longURL = urlDatabase[shortURL].longURL;
-    res.redirect(longURL);
+  res.redirect(longURL);
 });
 
 app.listen(PORT, () => {
