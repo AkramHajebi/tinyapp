@@ -14,14 +14,14 @@ app.use(cookieSession({
 }));
 
 const urlDatabase = {
-  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "userRandomID" },
+  /* b6UTxQ: { longURL: "https://www.tsn.ca", userID: "userRandomID" },
   c6UTxQ: { longURL: "https://www.kala.ca", userID: "user2RandomID" },
-  i3BoGr: { longURL: "https://www.google.ca", userID: "user2RandomID" }
+  i3BoGr: { longURL: "https://www.google.ca", userID: "user2RandomID" } */
 };
 
 //users database
 const users = {
-  "userRandomID": {
+  /* "userRandomID": {
     id: "userRandomID",
     email: "user@example.com",
     password:  bcrypt.hashSync("12345", 10)
@@ -30,7 +30,7 @@ const users = {
     id: "user2RandomID", 
     email: "user2@example.com", 
     password: bcrypt.hashSync("dishwasher-funk", 10)
-  }
+  } */
 };
 
 //Generate a Random ShortURL
