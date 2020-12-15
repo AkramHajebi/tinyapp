@@ -13,7 +13,7 @@ app.use(cookieSession({
   keys: ['key1', 'key2']
 }));
 
-const urlDatabase = {
+const urlDatabase = {cd 
   /* b6UTxQ: { longURL: "https://www.tsn.ca", userID: "userRandomID" },
   c6UTxQ: { longURL: "https://www.kala.ca", userID: "user2RandomID" },
   i3BoGr: { longURL: "https://www.google.ca", userID: "user2RandomID" } */
@@ -40,9 +40,9 @@ function generateRandomString() {
 }
 
 // function to add new URL to urlDatabase
-function addKeyValuePair(stURL, lURL, ID) {
-  urlDatabase[stURL] = {
-    longURL: lURL,
+function addKeyValuePair(shortUrl, longUrl, ID) {
+  urlDatabase[shortUrl] = {
+    longURL: longUrl,
     userID: ID
   }
 };
@@ -50,7 +50,6 @@ function addKeyValuePair(stURL, lURL, ID) {
 //urlsForUse rreturnsURLs with userID equal to id of logged-in user.
 const urlsForUser = function(id) {
   let urls = {};
-
   for (const url in urlDatabase) {
     if (urlDatabase[url].userID === id) {
       urls[url] = urlDatabase[url];      
@@ -60,7 +59,6 @@ const urlsForUser = function(id) {
 };
 
 app.get("/", (req, res) => {
-
   let templateVars = {
     user: users[req.session["user_id"]]
   };
@@ -74,9 +72,7 @@ app.get("/", (req, res) => {
 
 // Add a route for /urls
 app.get("/urls", (req, res) => {
-
   let urls = urlsForUser(req.session["user_id"]);
-
   let templateVars =
   {
     user: users[req.session["user_id"]],
@@ -85,15 +81,14 @@ app.get("/urls", (req, res) => {
   //console.log(templateVars);
   res.render("urls_index", templateVars);
 });
-
 //Add a POST Route to Receive the Form Submission
 app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
   let longURL = req.body.longURL;  // Log the POST request body to the console
   let userID =  req.session["user_id"];
-
-  addKeyValuePair(shortURL, longURL, userID);
   
+  addKeyValuePair(shortURL, longURL, userID);
+    
   let templateVars = {
     user: users[req.session["user_id"]],
   };
@@ -103,7 +98,6 @@ app.post("/urls", (req, res) => {
   } else {
     res.send("You are not allowed to edit this short URL");
   }
-
 });
 
 //Add a POST Route to delet a URL from the list of URLs
@@ -223,7 +217,6 @@ app.post("/register", (req, res) => {
 
 //Add a POST Route to login with email and pass
 app.post("/login", (req, res) => {
-
   const email = req.body.email;
   const password = req.body.password;
   let ID;
@@ -232,24 +225,14 @@ app.post("/login", (req, res) => {
   //console.log (user);
    if (user && bcrypt.compareSync(password,users[user].password)) {
     //console.log(user);
-
     let idUser = users[user].userID;
     //console.log(users[user].id);
-
     req.session['user_id'] = users[user].id; 
     res.redirect('/urls'); 
   } else {
    res.status(404).send('email doest exist or email-password do not match')
   }
 
-  /* let idUser = checkEmailPass(email, password);
-  if (idUser) { 
-    req.session['user_id'] = idUser;
-    //res.send('ok')
-    res.redirect('/urls'); 
-  } else {
-    res.status(404).send('email or password not match')
-  } */
 });
 
 app.get("/login", (req, res) => {
@@ -267,8 +250,7 @@ app.get("/login", (req, res) => {
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const longURL = urlDatabase[shortURL].longURL;
-  
-  res.redirect(longURL);
+    res.redirect(longURL);
 });
 
 app.listen(PORT, () => {
